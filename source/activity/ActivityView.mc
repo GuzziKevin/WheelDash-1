@@ -441,7 +441,7 @@ class ActivityRecordView extends WatchUi.View {
     mVoltageField.setData(currentVoltage);    // id 2
     mCurrentField.setData(currentCurrent);    // id 3
     mPowerField.setData(currentPower);        // id 4
-    mTempField.setData(eucData.temperature);  // id 5
+    mTempField.setData(eucData.getTemperature());  // id 5
 
     if (correctedSpeed > maxSpeed) {
       maxSpeed = correctedSpeed;
@@ -459,12 +459,12 @@ class ActivityRecordView extends WatchUi.View {
       maxPower = currentPower;
       mMaxPowerField.setData(maxPower);  // id 10
     }
-    if (eucData.temperature > maxTemp) {
-      maxTemp = eucData.temperature;
+    if (eucData.getTemperature() > maxTemp) {
+      maxTemp = eucData.getTemperature();
       mMaxTempField.setData(maxTemp);  // id 11
     }
-    if (eucData.temperature < minTemp && eucData.temperature != 0.0) {
-      minTemp = eucData.temperature;
+    if (eucData.getTemperature() < minTemp && eucData.getTemperature() != 0.0) {
+      minTemp = eucData.getTemperature();
       mMinTempField.setData(minTemp);  // id 11
     }
     if (currentVoltage < minVoltage) {

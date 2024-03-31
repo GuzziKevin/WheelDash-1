@@ -175,6 +175,14 @@
    <string id="watchBatteryStatistic">Display watch battery</string>
    <string id="profileName">Display profile name</string>
    <string id="debugMode">Enable Debug Mode (view)</string>
+
+   <string id="convertToFahrenheit">Convert to Fahrenheit</string>
+   <string id="fahrenheitUnit">Fahrenheit unit</string>
+   <string id="convertToMiles">Convert to miles</string>
+   <string id="milesUnit">Miles unit</string>   
+   <string id="enableTempe">Enable Tempe</string>
+   <string id="enableTPMS">Enable TPMS</string>
+   
     <!-- FIT Strings-->
 
     <string id="speed_graph_label">Speed</string>

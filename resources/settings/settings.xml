@@ -113,7 +113,48 @@
                 max="99"
             />
         </setting>
-        
+        <setting
+            propertyKey="@Properties.convertToFahrenheit"
+            title="@Strings.convertToFahrenheit">
+            <settingConfig
+                type="boolean"
+            />
+        </setting>
+         <setting
+            propertyKey="@Properties.fahrenheitUnit"
+            title="@Strings.fahrenheitUnit">
+            <settingConfig
+                type="boolean"
+            />
+        </setting>
+         <setting
+            propertyKey="@Properties.convertToMiles"
+            title="@Strings.convertToMiles">
+            <settingConfig
+                type="boolean"
+            />
+        </setting>
+         <setting
+            propertyKey="@Properties.milesUnit"
+            title="@Strings.milesUnit">
+            <settingConfig
+                type="boolean"
+            />
+        </setting>
+         <setting
+            propertyKey="@Properties.enableTempe"
+            title="@Strings.enableTempe">
+            <settingConfig
+                type="boolean"
+            />
+        </setting>
+         <setting
+            propertyKey="@Properties.enableTPMS"
+            title="@Strings.enableTPMS">
+            <settingConfig
+                type="boolean"
+            />
+        </setting>        
 
        <!--Profile 1-->
 

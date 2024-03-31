@@ -254,7 +254,41 @@ module eucData {
     return currentCurrent;
   }
   function getCorrectedSpeed() {
-    return speed * speedCorrectionFactor.toFloat();
+    var correctedSpeed = speed * speedCorrectionFactor.toFloat();
+    if (AppStorage.getSetting("convertToMiles")) { correctedSpeed = correctedSpeed / 1.609344; }
+    return correctedSpeed;    
+  }
+  // (0°C × 9/5) + 32 = 32°F
+  //TODO: this may introduce a bug in the alarms
+  //      we may need to convert the limits/thresholds wherever that is
+  //      although, there we are comparing the non-converted values so i think it will be okay
+  //also, i feel like this can be refactored somehow. was hoping to use an extension method 
+  //at the same time, they are concise and serve a single purpose
+  function getTemperature() {
+    var temp = temperature;
+    if (AppStorage.getSetting("convertToFahrenheit")) { temp = (temperature / 5) + 32;}
+    return temp;
+  }
+  function getMaxTemperature() {
+    var temp = maxTemperature;
+    if (AppStorage.getSetting("convertToFahrenheit")) { temp = (maxTemperature / 5) + 32;}
+    return temp;
+  }
+  function getTemperature2() {
+    var temp = temperature2;
+    if (AppStorage.getSetting("convertToFahrenheit")) { temp = (temperature2 / 5) + 32;}
+    return temp;
+  }
+
+  function getTripDistance() {
+    var distance = tripDistance;
+    if (AppStorage.getSetting("convertToMiles")) { distance = tripDistance / 1.609344; }
+    return distance;
+  }
+  function getTotalDistance() {
+    var distance = totalDistance;
+    if (AppStorage.getSetting("convertToMiles")) { distance = totalDistance / 1.609344; }
+    return distance;
   }
 
   function getVoltage() {
