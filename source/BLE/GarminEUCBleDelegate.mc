@@ -33,6 +33,7 @@ class eucBLEDelegate extends Ble.BleDelegate {
   ];
 */
   function initialize(pm, _profileNb, q, _decoder) {
+    try {
     message1 = "initializeBle";
     BleDelegate.initialize();
     profileManager = pm;
@@ -90,9 +91,13 @@ class eucBLEDelegate extends Ble.BleDelegate {
 */
     Ble.setScanState(Ble.SCAN_STATE_SCANNING);
     isFirst = isFirstConnection();
+        } catch (e) {
+      System.println("e=" + e.getErrorMessage());
+    }
   }
 
   function onConnectedStateChanged(device, state) {
+    try {
     //		view.deviceStatus=state;
     if (state == Ble.CONNECTION_STATE_CONNECTED) {
       message3 = "BLE connected";
@@ -201,8 +206,12 @@ class eucBLEDelegate extends Ble.BleDelegate {
       Ble.setScanState(Ble.SCAN_STATE_SCANNING);
       eucData.paired = false;
     }
+        } catch (e) {
+      System.println("e=" + e.getErrorMessage());
+    }
   }
   function isFirstConnection() {
+    try {
     // resetting profileScanResult if wheelName changed :
     if (
       !AppStorage.getSetting("wheelName_p1").equals(
@@ -235,9 +244,13 @@ class eucBLEDelegate extends Ble.BleDelegate {
     } else {
       return false;
     }
+        } catch (e) {
+      System.println("e=" + e.getErrorMessage());
+    }
   }
 
   function storeSR(sr) {
+    try {
     if (profileNb == 1) {
       Storage.setValue("profile1Sr", sr);
       Storage.setValue("profile1Name", AppStorage.getSetting("wheelName_p1"));
@@ -247,6 +260,9 @@ class eucBLEDelegate extends Ble.BleDelegate {
     } else if (profileNb == 3) {
       Storage.setValue("profile3Sr", sr);
       Storage.setValue("profile3Name", AppStorage.getSetting("wheelName_p3"));
+    }
+        } catch (e) {
+      System.println("e=" + e.getErrorMessage());
     }
   }
   function loadSR() {
@@ -262,6 +278,7 @@ class eucBLEDelegate extends Ble.BleDelegate {
   }
   //! @param scanResults An iterator of new scan results
   function onScanResults(scanResults as Ble.Iterator) {
+    try {
     if (isFirst) {
       var wheelFound = false;
       for (
@@ -340,6 +357,9 @@ class eucBLEDelegate extends Ble.BleDelegate {
         device = Ble.pairDevice(result);
       }
     }
+        } catch (e) {
+      System.println("e=" + e.getErrorMessage());
+    }
   }
 
   function timerCallback() {
@@ -407,6 +427,7 @@ class eucBLEDelegate extends Ble.BleDelegate {
   }
 
   function sendCmd(cmd) {
+    try {
     //Sys.println("enter sending command " + cmd);
 
     if (service != null && char != null && cmd != "") {
@@ -415,12 +436,19 @@ class eucBLEDelegate extends Ble.BleDelegate {
       char.requestWrite(enc_cmd, { :writeType => Ble.WRITE_TYPE_DEFAULT });
       //  Sys.println("command sent !");
     }
+        } catch (e) {
+      System.println("e=" + e.getErrorMessage());
+    }
   }
 
   function sendRawCmd(cmd) {
+    try {
     //Sys.println("enter sending command " + cmd);
     char.requestWrite(cmd, { :writeType => Ble.WRITE_TYPE_DEFAULT });
     //  Sys.println("command sent !");
+        } catch (e) {
+      System.println("e=" + e.getErrorMessage());
+    }
   }
 
   private function contains(iter, obj, sr) {

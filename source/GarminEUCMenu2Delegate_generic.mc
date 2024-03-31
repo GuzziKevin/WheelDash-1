@@ -5,13 +5,19 @@ import Toybox.WatchUi;
 import Toybox.Timer;
 
 class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
-  private var eucBleDelegate = null;
-  private var queue = null;
-  private var parent_menu = null;
-  private var menu as CheckboxMenu?;
-  private var delay = 200;
+ private
+  var eucBleDelegate = null;
+ private
+  var queue = null;
+ private
+  var parent_menu = null;
+ private
+  var menu as CheckboxMenu ? ;
+ private
+  var delay = 200;
   var requestSubLabelsUpdate = false;
-  private var subLabelsRefreshDuration = 2000 / eucData.updateDelay; // ~2 sec
+ private
+  var subLabelsRefreshDuration = 2000 / eucData.updateDelay;  // ~2 sec
   var main_view;
   var EUCSettingsDict;
   var EUCConfig;
@@ -19,13 +25,8 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
   var EUCStatusLabels;
   var EUCConfigLabels;
 
-  function initialize(
-    current_menu,
-    current_eucBleDelegate,
-    q,
-    m_view,
-    _EUCSettingsDict
-  ) {
+  function initialize(current_menu, current_eucBleDelegate, q, m_view,
+                      _EUCSettingsDict) {
     EUCSettingsDict = _EUCSettingsDict;
     EUCStatus = EUCSettingsDict.getConfigWithStatusDict();
     EUCStatusLabels = EUCSettingsDict.getConfigWithStatusLabels();
@@ -46,60 +47,39 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
   }
   function onSelect(item) {
     for (var i = 0; i < EUCConfig.size(); i++) {
-      //System.println("label :" + item.getLabel().toString());
-      // System.println("item " + i + " : " + EUCConfigLabels[i]);
       if (item.getLabel().toString().equals(EUCConfigLabels[i])) {
-        // System.println("Enter " + EUCConfigLabels[i]);
         nestedMenu(EUCConfigLabels[i], EUCConfig[i]);
       }
     }
-    //System.println(item.getId().toString());
   }
 
   function nestedMenu(title, paramsdict) {
-    // var menu = new WatchUi.Menu2({:title=>title});
-    menu = new WatchUi.CheckboxMenu({ :title => title });
+    menu = new WatchUi.CheckboxMenu({ : title => title});
     var delegate;
     var menuKeys = paramsdict.keys();
     var menuVals = paramsdict.values();
     for (var i = 0; i < paramsdict.size(); i++) {
       menu.addItem(
-        new CheckboxMenuItem(menuKeys[i], "", menuVals[i], false, {})
-      );
+          new CheckboxMenuItem(menuKeys[i], "", menuVals[i], false, {}));
     }
-    delegate = new GarminEUCsubMenu2Delegate(
-      title,
-      parent_menu,
-      self,
-      eucBleDelegate,
-      queue
-    ); // a WatchUi.Menu2InputDelegate
+    delegate = new GarminEUCsubMenu2Delegate(title, parent_menu, self,
+                                             eucBleDelegate, queue);
     WatchUi.pushView(menu, delegate, WatchUi.SLIDE_IMMEDIATE);
-    //delayUpdate.stop();
     return true;
   }
 
   function updateSublabels() {
     if (EUCStatus == null) {
-      // System.println("null status dicts");
       return;
     }
     var menuToUpdate = parent_menu;
-    //System.println("call update labels");
     if (menuToUpdate != null) {
       for (var i = 0; i < EUCConfigLabels.size(); i++) {
         for (var j = 0; j < EUCStatusLabels.size(); j++) {
           if (menuToUpdate.getItem(i).getLabel().equals(EUCStatusLabels[j])) {
-            // System.println("Update item: " + i);
-            menuToUpdate
-              .getItem(i)
-              .setSubLabel(
-                EUCStatus[j].keys()[
-                  EUCStatus[j]
-                    .values()
-                    .indexOf(EUCSettingsDict.getWheelSettingsStatus()[j])
-                ]
-              );
+            menuToUpdate.getItem(i).setSubLabel(
+                EUCStatus[j].keys()[EUCStatus[j].values().indexOf(
+                    EUCSettingsDict.getWheelSettingsStatus()[j])]);
           }
         }
       }
@@ -111,7 +91,6 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
     }
   }
   function uniqueCheck(parentMenuTitle, item) {
-    //System.println(parentMenuTitle);
     for (var i = 0; i < EUCConfig.size(); i++) {
       if (parentMenuTitle.equals(EUCConfigLabels[i])) {
         uncheckExeptItem(item, EUCConfig[i]);
@@ -143,73 +122,36 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
     }
   }
   function sendCommand(fromMenu, cmd) {
-    // execute command specific to Gotway/begode
     if (eucData.wheelBrand == 0) {
-      if (
-        EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
-        eucData.correctedSpeed > 2
-      ) {
-        //moving and locked settting
+      if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
+          eucData.correctedSpeed > 2) {
       } else {
         gotwayMenuCmd(fromMenu, cmd);
-        /*
-        if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1) {
-          System.println("executing locked setting because not moving");
-        } else {
-          System.println("executing non-locked setting");
-        }*/
       }
     }
     if (eucData.wheelBrand == 1) {
-      if (
-        EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
-        eucData.correctedSpeed > 2
-      ) {
-        //moving and locked settting
+      if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
+          eucData.correctedSpeed > 2) {
       } else {
         eucBleDelegate.sendCmd(cmd);
-        /*
-        if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1) {
-          System.println("executing locked setting because not moving");
-        } else {
-          System.println("executing non-locked setting");
-        }*/
       }
     }
-    // execute command specific to Kingsong
+
     if (eucData.wheelBrand == 2 || eucData.wheelBrand == 3) {
-      if (
-        EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
-        eucData.correctedSpeed > 2
-      ) {
-        //moving and locked settting
+      if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
+          eucData.correctedSpeed > 2) {
       } else {
         kingsongMenuCmd(fromMenu, cmd);
-        /*
-        if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1) {
-          System.println("executing locked setting because not moving");
-        } else {
-          System.println("executing non-locked setting");
-        }*/
       }
     }
     if (eucData.wheelBrand == 4) {
-      if (
-        EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
-        eucData.correctedSpeed > 2
-      ) {
-        //moving and locked settting
+      if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1 &&
+          eucData.correctedSpeed > 2) {
       } else {
         inmotionMenuCmd(fromMenu, cmd);
-        /*
-        if (EUCSettingsDict.getConfigToLock().indexOf(fromMenu) != -1) {
-          System.println("executing locked setting because not moving");
-        } else {
-          System.println("executing non-locked setting");
-        }*/
       }
     }
-    queue.delayTimer.start(method(:timerCallback), delay, true);
+    queue.delayTimer.start(method( : timerCallback), delay, true);
     requestSubLabelsUpdate = true;
   }
 
@@ -220,99 +162,77 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
       command = "W";
       enc_cmd = string_to_byte_array(command as String);
 
-      queue.add(
-        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
-        eucBleDelegate.getPMService()
-      );
+      queue.add([ eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd ],
+                eucBleDelegate.getPMService());
       command = "M";
       enc_cmd = string_to_byte_array(command as String);
 
-      queue.add(
-        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
-        eucBleDelegate.getPMService()
-      );
+      queue.add([ eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd ],
+                eucBleDelegate.getPMService());
       command = cmd;
       enc_cmd = string_to_byte_array(command as String);
-      queue.add(
-        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
-        eucBleDelegate.getPMService()
-      );
+      queue.add([ eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd ],
+                eucBleDelegate.getPMService());
     }
     if (parentMenu.equals("Beep Volume")) {
       command = "W";
       enc_cmd = string_to_byte_array(command as String);
 
-      queue.add(
-        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
-        eucBleDelegate.getPMService()
-      );
+      queue.add([ eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd ],
+                eucBleDelegate.getPMService());
       command = "B";
       enc_cmd = string_to_byte_array(command as String);
 
-      queue.add(
-        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
-        eucBleDelegate.getPMService()
-      );
+      queue.add([ eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd ],
+                eucBleDelegate.getPMService());
       command = cmd;
       enc_cmd = string_to_byte_array(command as String);
-      queue.add(
-        [eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd],
-        eucBleDelegate.getPMService()
-      );
+      queue.add([ eucBleDelegate.getChar(), queue.C_WRITENR, enc_cmd ],
+                eucBleDelegate.getPMService());
     } else {
       eucBleDelegate.sendCmd(cmd);
     }
   }
 
   function kingsongMenuCmd(parentMenu, cmd) {
-    // would be more elegent to reuse fct getEmptyRequest()
     var cmd_frame = [
-      0xaa, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x5a, 0x5a,
+      0xaa, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14, 0x5a, 0x5a,
     ]b;
-    //System.println("empty_frame: " + cmd_frame.toString());
     if (parentMenu.equals("Lights")) {
       cmd_frame[2] = cmd.toNumber() + 0x12;
       cmd_frame[3] = 1;
       cmd_frame[16] = 115;
-      //System.println("lights_frame: " + cmd_frame.toString());
     }
     if (parentMenu.equals("Strobe Mode")) {
       cmd_frame[2] = cmd.toNumber();
       cmd_frame[16] = 83;
-      //System.println("strobe_frame: " + cmd_frame.toString());
     }
     if (parentMenu.equals("Leds Mode")) {
       cmd_frame[2] = cmd.toNumber();
       cmd_frame[16] = 108;
-      //System.println("leds_frame: " + cmd_frame.toString());
     }
     if (parentMenu.equals("Pedal Mode")) {
       cmd_frame[2] = cmd.toNumber();
       cmd_frame[3] = 224;
       cmd_frame[16] = 135;
       cmd_frame[17] = 21;
-      //System.println("pedal_frame: " + cmd_frame.toString());
     }
     eucBleDelegate.sendRawCmd(cmd_frame);
   }
 
   function inmotionMenuCmd(parentMenu, cmd) {
-    //Set light mode
-    //System.println("empty_frame: " + cmd_frame.toString());
     if (parentMenu.equals("Lights")) {
       if (eucData.model.equals("V11")) {
-        var data = [0xaa, 0xaa, 0x14, 0x03, 0x60, 0x50, 0x00, 0x00]b;
+        var data = [ 0xaa, 0xaa, 0x14, 0x03, 0x60, 0x50, 0x00, 0x00 ]b;
         data[6] = cmd.toNumber();
         data[7] = xorChkSum(data.slice(0, data.size() - 1));
         queue.flush();
-        queue.add(
-          [eucBleDelegate.getCharW(), queue.C_WRITENR, data],
-          eucBleDelegate.getPMService()
-        );
+        queue.add([ eucBleDelegate.getCharW(), queue.C_WRITENR, data ],
+                  eucBleDelegate.getPMService());
       }
       if (eucData.model.equals("V12")) {
-        var data = [0xaa, 0xaa, 0x14, 0x04, 0x60, 0x50, 0x00, 0x00, 0x00]b; // Thanks Seba ;)
+        var data = [ 0xaa, 0xaa, 0x14, 0x04, 0x60, 0x50, 0x00, 0x00, 0x00 ]b;
         if (cmd.toNumber() == 0) {
           data[6] = 0x00;
           data[7] = 0x00;
@@ -331,66 +251,50 @@ class GarminEUCMenu2Delegate_generic extends WatchUi.Menu2InputDelegate {
         }
         data[8] = xorChkSum(data.slice(0, data.size() - 1));
         queue.flush();
-        queue.add(
-          [eucBleDelegate.getCharW(), queue.C_WRITENR, data],
-          eucBleDelegate.getPMService()
-        );
-        // todo : store light preference for V12 in watch storage.
+        queue.add([ eucBleDelegate.getCharW(), queue.C_WRITENR, data ],
+                  eucBleDelegate.getPMService());
       }
-      //System.println("lights_frame: " + cmd_frame.toString());
     }
     if (parentMenu.equals("DRL")) {
-      var data = [0xaa, 0xaa, 0x14, 0x03, 0x60, 0x2d, 0x00, 0x00]b;
+      var data = [ 0xaa, 0xaa, 0x14, 0x03, 0x60, 0x2d, 0x00, 0x00 ]b;
       data[6] = cmd.toNumber();
       data[7] = xorChkSum(data.slice(0, data.size() - 1));
       queue.flush();
-      queue.add(
-        [eucBleDelegate.getCharW(), queue.C_WRITENR, data],
-        eucBleDelegate.getPMService()
-      );
-      //System.println("strobe_frame: " + cmd_frame.toString());
+      queue.add([ eucBleDelegate.getCharW(), queue.C_WRITENR, data ],
+                eucBleDelegate.getPMService());
     }
     if (parentMenu.equals("Ride Mode")) {
-      var data = [0xaa, 0xaa, 0x14, 0x03, 0x60, 0x23, 0x00, 0x00]b;
+      var data = [ 0xaa, 0xaa, 0x14, 0x03, 0x60, 0x23, 0x00, 0x00 ]b;
       data[6] = cmd.toNumber();
       data[7] = xorChkSum(data.slice(0, data.size() - 1));
       queue.flush();
-      queue.add(
-        [eucBleDelegate.getCharW(), queue.C_WRITENR, data],
-        eucBleDelegate.getPMService()
-      );
-
-      //System.println("leds_frame: " + cmd_frame.toString());
+      queue.add([ eucBleDelegate.getCharW(), queue.C_WRITENR, data ],
+                eucBleDelegate.getPMService());
     }
     if (parentMenu.equals("Performance Mode")) {
-      var data = [0xaa, 0xaa, 0x14, 0x03, 0x60, 0x24, 0x00, 0x00]b;
+      var data = [ 0xaa, 0xaa, 0x14, 0x03, 0x60, 0x24, 0x00, 0x00 ]b;
       data[6] = cmd.toNumber();
       data[7] = xorChkSum(data.slice(0, data.size() - 1));
       queue.flush();
-      queue.add(
-        [eucBleDelegate.getCharW(), queue.C_WRITENR, data],
-        eucBleDelegate.getPMService()
-      );
-
-      //System.println("pedal_frame: " + cmd_frame.toString());
+      queue.add([ eucBleDelegate.getCharW(), queue.C_WRITENR, data ],
+                eucBleDelegate.getPMService());
     }
   }
 
-  function timerCallback() {
-    queue.run();
-  }
+  function timerCallback() { queue.run(); }
 }
 
 /*
-//! Custom menu adapted from garmin sdk samples, I was using an icon to identify currently selected item but not showing on my garmin venu -> switched to checkbox items for menu
-class CustomEucMenu extends WatchUi.CustomMenu {
-    var title="";
+//! Custom menu adapted from garmin sdk samples, I was using an icon to identify
+currently selected item but not showing on my garmin venu -> switched to
+checkbox items for menu class CustomEucMenu extends WatchUi.CustomMenu { var
+title="";
     //! Constructor
     //! @param itemHeight The pixel height of menu items rendered by this menu
     //! @param backgroundColor The color for the menu background
-    public function initialize(itemHeight as Number, backgroundColor as ColorValue,titleToShow) {
-        CustomMenu.initialize(itemHeight, backgroundColor, {:titleItemHeight=>20});
-        title=titleToShow;
+    public function initialize(itemHeight as Number, backgroundColor as
+ColorValue,titleToShow) { CustomMenu.initialize(itemHeight, backgroundColor,
+{:titleItemHeight=>20}); title=titleToShow;
     }
 
     //! Draw the menu title
@@ -401,7 +305,8 @@ class CustomEucMenu extends WatchUi.CustomMenu {
         dc.drawLine(0, dc.getHeight() - 2, dc.getWidth(), dc.getHeight() - 2);
         dc.setPenWidth(1);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, Graphics.FONT_TINY, title, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, Graphics.FONT_TINY,
+title, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
 
 }
@@ -416,10 +321,9 @@ class CustomItem extends WatchUi.CustomMenuItem {
     //! @param id The identifier for this item
     //! @param label Text to display
     //! @param textColor Color of the text
-    public function initialize(id as Symbol, label as String, textColor as ColorValue) {
-        CustomMenuItem.initialize(id, {});
-        _label = label;
-        _textColor = textColor;
+    public function initialize(id as Symbol, label as String, textColor as
+ColorValue) { CustomMenuItem.initialize(id, {}); _label = label; _textColor =
+textColor;
     }
 
     //! Draw the item string at the center of the item.
@@ -435,11 +339,10 @@ class CustomItem extends WatchUi.CustomMenuItem {
             dc.clear();
             dc.drawBitmap(40, (dc.getHeight() / 2)-20, check_bitmap);
         }
-        
-        dc.setColor(_textColor, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, font, _label, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-    }
 
-     
+        dc.setColor(_textColor, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2, font, _label,
+Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    }
 }
 */

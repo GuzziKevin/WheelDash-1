@@ -10,15 +10,8 @@ class GarminEUCDelegate extends WatchUi.BehaviorDelegate {
   var menu2Delegate = null;
   var actionButtonTrigger = null;
 
-  function initialize(
-    main_view,
-    _menu2,
-    _menu2Delegate,
-    current_eucBleDelegate,
-    q,
-    _activityView,
-    _actionButtonTrigger
-  ) {
+  function initialize(main_view, _menu2, _menu2Delegate, current_eucBleDelegate,
+                      q, _activityView, _actionButtonTrigger) {
     eucBleDelegate = current_eucBleDelegate;
     queue = q;
     menu = _menu2;
@@ -39,17 +32,11 @@ class GarminEUCDelegate extends WatchUi.BehaviorDelegate {
     }
     return true;
   }
-  function onNextPage() as Boolean {
-    return false;
-  }
+  function onNextPage() as Boolean { return false; }
 
   function onKey(keyEvent as WatchUi.KeyEvent) {
-    actionButtonTrigger.triggerAction(
-      eucBleDelegate,
-      keyEvent.getKey(),
-      self,
-      queue
-    );
+    actionButtonTrigger.triggerAction(eucBleDelegate, keyEvent.getKey(), self,
+                                      queue);
 
     if (keyEvent.getKey().equals(WatchUi.KEY_ESC)) {
       var message = "Exit WheelDash?";
@@ -61,29 +48,17 @@ class GarminEUCDelegate extends WatchUi.BehaviorDelegate {
     return true;
   }
 
-  function getActivityView() {
-    return activityView;
-  }
-  function unpair() {
-    eucBleDelegate.manualUnpair();
-  }
+  function getActivityView() { return activityView; }
+  function unpair() { eucBleDelegate.manualUnpair(); }
   function goToActivityView() {
-    //System.println("bringing activity view");
-    WatchUi.pushView(
-      activityView,
-      new ActivityRecordDelegate(activityView),
-      WatchUi.SLIDE_UP
-    ); // Switch to activity view
+    WatchUi.pushView(activityView, new ActivityRecordDelegate(activityView),
+                     WatchUi.SLIDE_UP);  
   }
-  function getMenu2Delegate() {
-    return menu2Delegate;
-  }
+  function getMenu2Delegate() { return menu2Delegate; }
 }
 
 class MyConfirmationDelegate extends WatchUi.ConfirmationDelegate {
-  function initialize() {
-    ConfirmationDelegate.initialize();
-  }
+  function initialize() { ConfirmationDelegate.initialize(); }
 
   function onResponse(response) {
     if (response == WatchUi.CONFIRM_YES) {

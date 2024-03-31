@@ -7,13 +7,14 @@ module eucData {
   var limitedMemory = false;
   // Calculated PWM variables :
   // PLEASE UPDATE WITH YOU OWN VALUES BEFORE USE !
-  var rotationSpeed; // cutoff speed when freespin test performed
-  var powerFactor; // 0.9 for better safety
-  var rotationVoltage; // voltage when freespin test performed
-  var updateDelay; // UI refresh every updateDelay
-  var topBar; // String : Speed or PWM
-  var mainNumber; // String : Speed or PWM
-  var maxDisplayedSpeed; // number, used if topBar equals Speed : read from settings
+  var rotationSpeed;      // cutoff speed when freespin test performed
+  var powerFactor;        // 0.9 for better safety
+  var rotationVoltage;    // voltage when freespin test performed
+  var updateDelay;        // UI refresh every updateDelay
+  var topBar;             // String : Speed or PWM
+  var mainNumber;         // String : Speed or PWM
+  var maxDisplayedSpeed;  // number, used if topBar equals Speed : read from
+                          // settings
   var alarmThreshold_PWM;
   var alarmThreshold_speed;
   var alarmThreshold_temp;
@@ -23,12 +24,12 @@ module eucData {
   var debug;
   var BLEReadRate = 0;
   var timeWhenConnected;
-  //UI
+  // UI
   var sagThreshold = 0.3;
   var orangeColoringThreshold;
   var redColoringThreshold;
 
-  var speedCorrectionFactor = 1; // correct distance aswell ...
+  var speedCorrectionFactor = 1;  // correct distance aswell ...
   var useMiles = 0;
   var deviceName = null;
   var voltage_scaling = 1;
@@ -77,15 +78,15 @@ module eucData {
   // Kingsong & inmotion :
   var model = "none";
 
-  //inmotion specific
+  // inmotion specific
   var imHornSound = 0x18;
   var batteryTemp1 = 0.0;
   var batteryTemp2 = 0.0;
 
-  //S22 DEBUG
-  //var charValue = "";
-  //var queueValue = "";
-  //var wtype = "";
+  // S22 DEBUG
+  // var charValue = "";
+  // var queueValue = "";
+  // var wtype = "";
 
   function getBatteryPercentage() {
     // using better battery formula from wheellog
@@ -129,7 +130,7 @@ module eucData {
       }
     }
     //-----------------------------------------------------------
-    //Kingsong --------------------------------------------------
+    // Kingsong --------------------------------------------------
 
     if (wheelBrand == 2 || wheelBrand == 3) {
       var KSwheels84v = [
@@ -142,7 +143,7 @@ module eucData {
         "KS-S18",
       ];
       var KSwheels100v = ["KS-S19"];
-      var KSwheels126v = ["KS-S20", "KS-S22"];
+      var KSwheels126v = [ "KS-S20", "KS-S22" ];
 
       if (KSwheels84v.indexOf(model) != -1) {
         if (voltage > 83.5) {
@@ -218,17 +219,16 @@ module eucData {
 
   function getPWM() {
     if (eucData.voltage != 0) {
-      //Quick&dirty fix for now, need to rewrite this:
+      // Quick&dirty fix for now, need to rewrite this:
       if (wheelBrand != 0 || gothPWN == true) {
-        // 0 is begode/gotway, all other brands returns hPWM (Leaperkim / KS / OLD KS / IM / VESC)
+        // 0 is begode/gotway, all other brands returns hPWM (Leaperkim / KS /
+        // OLD KS / IM / VESC)
         return hPWM;
       } else {
         var CalculatedPWM =
-          eucData.speed.toFloat() /
-          ((rotationSpeed / rotationVoltage) *
-            eucData.voltage.toFloat() *
-            eucData.voltage_scaling *
-            powerFactor);
+            eucData.speed.toFloat() /
+            ((rotationSpeed / rotationVoltage) * eucData.voltage.toFloat() *
+             eucData.voltage_scaling * powerFactor);
         return CalculatedPWM * 100;
       }
     } else {

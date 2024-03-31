@@ -10,24 +10,26 @@ using Toybox.Time;
 using Toybox.Math;
 
 class ActivityRecordDelegate extends WatchUi.BehaviorDelegate {
-  private var _view as ActivityRecordView?;
+ private
+  var _view as ActivityRecordView ? ;
 
   //! Constructor
   //! @param view The app view
-  public function initialize(view) {
+ public
+  function initialize(view) {
     BehaviorDelegate.initialize();
     _view = view;
   }
-  public function setView(view as ActivityRecordView) {}
+ public
+  function setView(view as ActivityRecordView) {}
   //! On menu event, start/stop recording
   //! @return true if handled, false otherwise
-  public function onMenu() as Boolean {
-    return true;
-  }
+ public
+  function onMenu() as Boolean { return true; }
 
   function onKey(keyEvent) {
     if (keyEvent.getKey() == WatchUi.KEY_ENTER) {
-      if (Toybox has :ActivityRecording) {
+      if (Toybox has : ActivityRecording) {
         if (!_view.isSessionRecording()) {
           _view.startRecording();
         } else {
@@ -42,29 +44,37 @@ class ActivityRecordDelegate extends WatchUi.BehaviorDelegate {
   }
 
   function onPreviousPage() {
-    // WatchUi.switchToView(main_view, main_delegate, WatchUi.SLIDE_UP); // Switch to
+    // WatchUi.switchToView(main_view, main_delegate, WatchUi.SLIDE_UP); //
+    // Switch to
     WatchUi.popView(WatchUi.SLIDE_DOWN);
     return true;
   }
 }
 
 class ActivityRecordView extends WatchUi.View {
-  private var accuracy = [
+ private
+  var accuracy = [
     "not available",
     "last know GPS fix",
     "Poor GPS fix",
     "Usable GPS fix",
     "Good GPS fix",
   ];
-  private var accuracy_msg = "";
+ private
+  var accuracy_msg = "";
 
-  private var fitTimer;
-  private var _session as Session?;
-  private var startingMoment as Time.Moment?;
-  private var startingEUCTripDistance;
+ private
+  var fitTimer;
+ private
+  var _session as Session ? ;
+ private
+  var startingMoment as Time.Moment ? ;
+ private
+  var startingEUCTripDistance;
 
   //! Constructor
-  public function initialize() {
+ public
+  function initialize() {
     View.initialize();
 
     if (fitTimer == null) {
@@ -74,14 +84,12 @@ class ActivityRecordView extends WatchUi.View {
   }
 
   //! Stop the recording if necessary
-  public function stopRecording() as Void {
+ public
+  function stopRecording() as Void {
     eucData.activityRecording = false;
 
-    if (
-      Toybox has :ActivityRecording &&
-      isSessionRecording() &&
-      _session != null
-    ) {
+    if (Toybox has
+        : ActivityRecording && isSessionRecording() && _session != null) {
       _session.stop();
       _session.save();
       _session = null;
@@ -93,20 +101,20 @@ class ActivityRecordView extends WatchUi.View {
   }
 
   //! Start recording a session
-  public function startRecording() as Void {
+ public
+  function startRecording() as Void {
     eucData.activityRecording = true;
 
     _session = ActivityRecording.createSession({
-      :name => "EUC riding",
-      :sport => ActivityRecording.SPORT_GENERIC,
+      : name => "EUC riding", : sport => ActivityRecording.SPORT_GENERIC,
     });
     setupFields();
     _session.start();
     resetVariables();
     initSessionVar();
     if (fitTimer != null) {
-      //System.println("FITtimerStarted");
-      fitTimer.start(method(:updateFitData), 1000, true);
+      // System.println("FITtimerStarted");
+      fitTimer.start(method( : updateFitData), 1000, true);
     }
     WatchUi.requestUpdate();
   }
@@ -120,37 +128,39 @@ class ActivityRecordView extends WatchUi.View {
   }
   //! Load your resources here
   //! @param dc Device context
-  public function onLayout(dc as Dc) as Void {}
+ public
+  function onLayout(dc as Dc) as Void {}
 
   //! Called when this View is removed from the screen. Save the
   //! state of this View here. This includes freeing resources from
   //! memory.
-  public function onHide() as Void {
+ public
+  function onHide() as Void {
     if (eucData.activityRecording == false) {
-      //System.println("Stopping sensors");
-      Position.enableLocationEvents(
-        Position.LOCATION_DISABLE,
-        method(:onPosition)
-      );
+      // System.println("Stopping sensors");
+      Position.enableLocationEvents(Position.LOCATION_DISABLE,
+                                    method(
+                                        : onPosition));
     }
   }
 
   //! Restore the state of the app and prepare the view to be shown.
-  public function onShow() as Void {
-    //System.println("starting sensors");
+ public
+  function onShow() as Void {
+    // System.println("starting sensors");
     enableGPS();
   }
   function enableGPS() {
-    Position.enableLocationEvents(
-      Position.LOCATION_CONTINUOUS,
-      method(:onPosition)
-    );
+    Position.enableLocationEvents(Position.LOCATION_CONTINUOUS,
+                                  method(
+                                      : onPosition));
   }
   function onPosition(info as Info) as Void {}
 
   //! Update the view
   //! @param dc Device context
-  public function onUpdate(dc as Dc) as Void {
+ public
+  function onUpdate(dc as Dc) as Void {
     accuracy_msg = accuracy[Position.getInfo().accuracy];
     // Set background color
     dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
@@ -158,62 +168,42 @@ class ActivityRecordView extends WatchUi.View {
     dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
     dc.fillRectangle(0, 0, dc.getWidth(), dc.getHeight());
     dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
-    dc.drawText(
-      dc.getWidth() / 2,
-      0,
-      Graphics.FONT_XTINY,
-      "GPS:\n" + accuracy_msg,
-      Graphics.TEXT_JUSTIFY_CENTER
-    );
+    dc.drawText(dc.getWidth() / 2, 0, Graphics.FONT_XTINY,
+                "GPS:\n" + accuracy_msg, Graphics.TEXT_JUSTIFY_CENTER);
 
-    if (Toybox has :ActivityRecording) {
+    if (Toybox has : ActivityRecording) {
       // Draw the instructions
       if (!isSessionRecording()) {
         dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_BLACK);
         dc.drawText(
-          dc.getWidth() / 2,
-          dc.getHeight() / 2,
-          Graphics.FONT_MEDIUM,
-          "Press OK to\nStart Recording",
-          Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
-        );
+            dc.getWidth() / 2, dc.getHeight() / 2, Graphics.FONT_MEDIUM,
+            "Press OK to\nStart Recording",
+            Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
       } else {
         var x = dc.getWidth() / 2;
         var y = dc.getFontHeight(Graphics.FONT_XTINY) * 2;
         dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_BLACK);
-        dc.drawText(
-          x,
-          y,
-          Graphics.FONT_MEDIUM,
-          "Recording...",
-          Graphics.TEXT_JUSTIFY_CENTER
-        );
+        dc.drawText(x, y, Graphics.FONT_MEDIUM, "Recording...",
+                    Graphics.TEXT_JUSTIFY_CENTER);
         y += dc.getFontHeight(Graphics.FONT_MEDIUM);
         dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_BLACK);
-        dc.drawText(
-          x,
-          y,
-          Graphics.FONT_MEDIUM,
-          "Press OK again\nto Stop and Save\nthe Recording",
-          Graphics.TEXT_JUSTIFY_CENTER
-        );
+        dc.drawText(x, y, Graphics.FONT_MEDIUM,
+                    "Press OK again\nto Stop and Save\nthe Recording",
+                    Graphics.TEXT_JUSTIFY_CENTER);
       }
     } else {
       // tell the user this sample doesn't work
       dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_BLACK);
-      dc.drawText(
-        dc.getWidth() / 2,
-        dc.getWidth() / 2,
-        Graphics.FONT_MEDIUM,
-        "This product doesn't\nhave FIT Support",
-        Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
-      );
+      dc.drawText(dc.getWidth() / 2, dc.getWidth() / 2, Graphics.FONT_MEDIUM,
+                  "This product doesn't\nhave FIT Support",
+                  Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
   }
 
   //! Get whether a session is currently recording
   //! @return true if there is a session currently recording, false otherwise
-  public function isSessionRecording() as Boolean {
+ public
+  function isSessionRecording() as Boolean {
     if (_session != null) {
       return _session.isRecording();
     }
@@ -304,143 +294,88 @@ class ActivityRecordView extends WatchUi.View {
     } else {
       */
     mSpeedField = _session.createField(
-      "current_speed",
-      SPEED_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "km/h" }
-    );
+        "current_speed", SPEED_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_RECORD, : units => "km/h"});
     mTripDistField = _session.createField(
-      "current_TripDistance",
-      TRIPDISTANCE_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km" }
-    );
+        "current_TripDistance", TRIPDISTANCE_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "km"});
     mMaxSpeedField = _session.createField(
-      "session_Max_speed",
-      MAXSPEED_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km/h" }
-    );
+        "session_Max_speed", MAXSPEED_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "km/h"});
     mAvgSpeedField = _session.createField(
-      "session_Avg_Speed",
-      AVGSPEED_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "km/h" }
-    );
+        "session_Avg_Speed", AVGSPEED_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "km/h"});
     // }
 
     mPWMField = _session.createField(
-      "current_PWM",
-      PWM_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "%" }
-    );
+        "current_PWM", PWM_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_RECORD, : units => "%"});
     mVoltageField = _session.createField(
-      "current_Voltage",
-      VOLTAGE_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "V" }
-    );
+        "current_Voltage", VOLTAGE_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_RECORD, : units => "V"});
     mCurrentField = _session.createField(
-      "current_Current",
-      CURRENT_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "A" }
-    );
+        "current_Current", CURRENT_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_RECORD, : units => "A"});
     mPowerField = _session.createField(
-      "current_Power",
-      POWER_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "W" }
-    );
+        "current_Power", POWER_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_RECORD, : units => "W"});
     mTempField = _session.createField(
-      "current_Temperature",
-      TEMP_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_RECORD, :units => "°C" }
-    );
+        "current_Temperature", TEMP_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_RECORD, : units => "°C"});
 
     mMaxPWMField = _session.createField(
-      "session_Max_PWM",
-      MAXPWM_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "%" }
-    );
+        "session_Max_PWM", MAXPWM_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "%"});
     mMaxCurrentField = _session.createField(
-      "session_Max_Current",
-      MAXCURRENT_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "A" }
-    );
+        "session_Max_Current", MAXCURRENT_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "A"});
     mMaxPowerField = _session.createField(
-      "session_Max_Current",
-      MAXPOWER_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "W" }
-    );
+        "session_Max_Current", MAXPOWER_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "W"});
     mMaxTempField = _session.createField(
-      "session_Max_Temperature",
-      MAXTEMP_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "°C" }
-    );
+        "session_Max_Temperature", MAXTEMP_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "°C"});
 
     mMinTempField = _session.createField(
-      "session_Min_Temperature",
-      MINTEMP_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "°C" }
-    );
+        "session_Min_Temperature", MINTEMP_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "°C"});
 
     mAvgCurrentField = _session.createField(
-      "session_Avg_Current",
-      AVGCURRENT_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "A" }
-    );
+        "session_Avg_Current", AVGCURRENT_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "A"});
     mAvgPowerField = _session.createField(
-      "session_Avg_Power",
-      AVGPOWER_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "W" }
-    );
+        "session_Avg_Power", AVGPOWER_FIELD_ID, FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "W"});
     mRunningTimeDebugField = _session.createField(
-      "session_Running_Time",
-      RUNNINGTIME_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "s" }
-    );
+        "session_Running_Time", RUNNINGTIME_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "s"});
 
     mMinVoltageField = _session.createField(
-      "session_Min_Voltage",
-      MINVOLTAGE_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "V" }
-    );
+        "session_Min_Voltage", MINVOLTAGE_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "V"});
     mMaxVoltageField = _session.createField(
-      "session_Max_Voltage",
-      MAXVOLTAGE_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "V" }
-    );
+        "session_Max_Voltage", MAXVOLTAGE_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "V"});
     mMinBatteryField = _session.createField(
-      "session_Min_Battery",
-      MINBATTERY_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "%" }
-    );
+        "session_Min_Battery", MINBATTERY_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "%"});
     mMaxBatteryField = _session.createField(
-      "session_Max_Battery",
-      MAXBATTERY_FIELD_ID,
-      FitContributor.DATA_TYPE_FLOAT,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :units => "%" }
-    );
+        "session_Max_Battery", MAXBATTERY_FIELD_ID,
+        FitContributor.DATA_TYPE_FLOAT,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : units => "%"});
     mWheelName = _session.createField(
-      "wheel_Name",
-      WHEELNAME_FIELD_ID,
-      FitContributor.DATA_TYPE_STRING,
-      { :mesgType => FitContributor.MESG_TYPE_SESSION, :count => 32 }
-    );
+        "wheel_Name", WHEELNAME_FIELD_ID, FitContributor.DATA_TYPE_STRING,
+        { : mesgType => FitContributor.MESG_TYPE_SESSION, : count => 32});
     /*
     mSpeedField.setData(0.0);
     mTripDistField.setData(0.0);
@@ -492,7 +427,7 @@ class ActivityRecordView extends WatchUi.View {
   var avgPower = 0.0;
 
   function updateFitData() {
-    //System.println("updateFit");
+    // System.println("updateFit");
     callNb++;
     currentVoltage = eucData.getVoltage();
     currentBatteryPerc = eucData.getBatteryPercentage();
@@ -501,36 +436,36 @@ class ActivityRecordView extends WatchUi.View {
     currentCurrent = eucData.getCurrent();
     currentPower = currentCurrent * currentVoltage;
 
-    mSpeedField.setData(correctedSpeed); // id 0
-    mPWMField.setData(currentPWM); //id 1
-    mVoltageField.setData(currentVoltage); // id 2
-    mCurrentField.setData(currentCurrent); // id 3
-    mPowerField.setData(currentPower); // id 4
-    mTempField.setData(eucData.temperature); // id 5
+    mSpeedField.setData(correctedSpeed);      // id 0
+    mPWMField.setData(currentPWM);            // id 1
+    mVoltageField.setData(currentVoltage);    // id 2
+    mCurrentField.setData(currentCurrent);    // id 3
+    mPowerField.setData(currentPower);        // id 4
+    mTempField.setData(eucData.temperature);  // id 5
 
     if (correctedSpeed > maxSpeed) {
       maxSpeed = correctedSpeed;
-      mMaxSpeedField.setData(maxSpeed); // id 7
+      mMaxSpeedField.setData(maxSpeed);  // id 7
     }
     if (currentPWM > maxPWM) {
       maxPWM = currentPWM;
-      mMaxPWMField.setData(maxPWM); // id 8
+      mMaxPWMField.setData(maxPWM);  // id 8
     }
     if (currentCurrent > maxCurrent) {
       maxCurrent = currentCurrent;
-      mMaxCurrentField.setData(maxCurrent); // id 9
+      mMaxCurrentField.setData(maxCurrent);  // id 9
     }
     if (currentPower > maxPower) {
       maxPower = currentPower;
-      mMaxPowerField.setData(maxPower); // id 10
+      mMaxPowerField.setData(maxPower);  // id 10
     }
     if (eucData.temperature > maxTemp) {
       maxTemp = eucData.temperature;
-      mMaxTempField.setData(maxTemp); // id 11
+      mMaxTempField.setData(maxTemp);  // id 11
     }
     if (eucData.temperature < minTemp && eucData.temperature != 0.0) {
       minTemp = eucData.temperature;
-      mMinTempField.setData(minTemp); // id 11
+      mMinTempField.setData(minTemp);  // id 11
     }
     if (currentVoltage < minVoltage) {
       minVoltage = currentVoltage;
@@ -550,26 +485,25 @@ class ActivityRecordView extends WatchUi.View {
     }
     var currentMoment = new Time.Moment(Time.now().value());
     var elaspedTime = startingMoment.subtract(currentMoment);
-    //System.println("elaspsed :" + elaspedTime.value());
+    // System.println("elaspsed :" + elaspedTime.value());
     if (elaspedTime.value() != 0 && eucData.totalDistance > 0) {
       if (startingEUCTripDistance < 0) {
         startingEUCTripDistance = eucData.totalDistance;
       }
-      sessionDistance =
-        (eucData.totalDistance - startingEUCTripDistance) *
-        eucData.speedCorrectionFactor;
+      sessionDistance = (eucData.totalDistance - startingEUCTripDistance) *
+                        eucData.speedCorrectionFactor;
       avgSpeed = sessionDistance / (elaspedTime.value() / 3600.0);
     } else {
       sessionDistance = 0.0;
       avgSpeed = 0.0;
     }
-    mTripDistField.setData(sessionDistance); // id 6
+    mTripDistField.setData(sessionDistance);  // id 6
 
-    mAvgSpeedField.setData(avgSpeed); // id 12
+    mAvgSpeedField.setData(avgSpeed);  // id 12
     sumCurrent = sumCurrent + currentCurrent;
     sumPower = sumPower + currentPower;
-    mAvgCurrentField.setData(sumCurrent / callNb); // id 13
-    mAvgPowerField.setData(sumPower / callNb); // id 14
+    mAvgCurrentField.setData(sumCurrent / callNb);  // id 13
+    mAvgPowerField.setData(sumPower / callNb);      // id 14
 
     mRunningTimeDebugField.setData(elaspedTime.value());
     mWheelName.setData(eucData.wheelName);

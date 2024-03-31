@@ -37,3 +37,6 @@ bin/mir/source/view/firstConnectionView.mir
 bin/mir/source/view/GarminEUCDebugView.mir
 bin/mir/source/view/GarminEUCView.mir
 bin/mir/source/view/homeView/components/ArcRenderer.mir
+bin/mir/source/util/dummyGen.mir
+bin/mir/source/BLE/frameDecoderVESC.mir
+bin/mir/source/BLE/frameDecoderIMV2.mir

@@ -23,9 +23,7 @@ class GarminEUCsubMenu2Delegate extends WatchUi.Menu2InputDelegate {
     Menu2InputDelegate.initialize();
   }
 
-  function onSelect(item) {
-    parent_delegate.uniqueCheck(fromMenu, item);
-  }
+  function onSelect(item) { parent_delegate.uniqueCheck(fromMenu, item); }
   function onDone() {
     parent_delegate.execute(fromMenu);
     WatchUi.popView(WatchUi.SLIDE_DOWN);
